@@ -200,6 +200,8 @@ namespace ER_DM
             string[] Headers = sr.ReadLine().Split("||");
             int RecordCount = 1;
             int counter = 0;
+            string objectID = "";
+
             while (!sr.EndOfStream)
             {
                 try
@@ -229,7 +231,12 @@ namespace ER_DM
                                 }
                             }
 
-                            if (Headers[i].Trim() == "Subject")
+                            if (Headers[i].Trim() == "r_object_id")
+                            {
+                                objectID = Fields[i].Trim();
+                            }
+
+                                if (Headers[i].Trim() == "Subject")
                             {
                                 corrModel.Subject = Fields[i];
                             }
@@ -298,7 +305,11 @@ namespace ER_DM
                                                 corrdetails.Add(new Corrdetail() { Duedate = null, Include = "Y", Isactive = "Y", Ismandatory = "N", RidCommunicationtype = 1, RidCommunicationDetail = null, SignatureRequired = "N", RidWorkflowstep = (corrtype == 2 ? 2 : 4), RidUsermaster = usermaster.RidUsermaster });
 
                                             }
+                                            else if (item.Contains("DCC"))
+                                            { 
+                                                corrdetails.Add(new Corrdetail() { Duedate = null, Include = "Y", Isactive = "Y", Ismandatory = "N", RidCommunicationtype = 1, RidCommunicationDetail = null, SignatureRequired = "N", RidWorkflowstep = (corrtype == 2 ? 2 : 4), RidUsermaster = Usermasters.Where(x => (x.Username) == "svc.cmsadmintest").FirstOrDefault().RidUsermaster});
 
+                                            }
                                         }
                                         catch (Exception)
                                         {
@@ -340,6 +351,7 @@ namespace ER_DM
                             }
                             if (Headers[i].Trim() == "r_object_id")
                             {
+                                objectID = Fields[i].Trim();
                                 if (Fields[i].Trim().Length > 0)
                                 {
                                     attachments.Add(new Attachment() { ObjectID = Fields[i], Isactive = "Y" });
@@ -465,7 +477,7 @@ namespace ER_DM
                 catch (Exception)
                 {
 
-                    Console.WriteLine("Skipping record");
+                    Console.WriteLine(objectID + ": Skipping record");
                 }
             }
             sr.Close();
